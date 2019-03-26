@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LINKS</title>
+  <meta charset="utf-8" />
+<style>
+body{
+  margin: 0px;
+  font-family: sans-serif;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: darkblue;
+}
+
+li {
+    float: left;
+}
+
+li a, .dropbtn {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover, .dropdown:hover .dropbtn, .btn_ativo {
+    background-color: #008015; //red = #FF0000
+    border-radius: 15px;
+    /*border-top-left-radius: 15px;
+    border-top-right-radius: 15px;*/
+}
+
+li.dropdown {
+    display: inline-block;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+#meio{
+  overflow:auto;
+  background-color: black; //goldenrod
+  height: 600px;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+#botao_link{
+  float:left;
+  padding: 30px 25px 20px 25px;
+  margin: 5px;
+  width: 180px;
+  height: 80px;
+  border-radius: 15px;
+  color: white;
+  font-family: sans-serif, verdana;
+  font-size: 28px;
+  text-decoration: none;
+  text-align: center;
+}
+#botao_link:hover{
+  /* transparencia */
+  filter:alpha(opacity=80);
+  opacity: 0.80;
+  -moz-opacity:0.80;
+  -webkit-opacity:0.80;
+}
+
+.cor1{ background-color: #008015; } /* #000080 */
+.cor2{ background-color: #007020; } /* DarkGreen */
+.cor3{ background-color: #006025} /* SaddleBrown */
+.cor4{ background-color: #005030; } /* #423786 */
+.cor5{ background-color: #006025; } /* #194888 */
+.cor6{ background-color: #007020; } /* #AD651F */
+.cor_destaques{ background-color: blue; }
+
+</style>
+    
+<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="js/funcoes.js"></script>
+    <script type="text/javascript">
+        console.log("inicio");
+        var lista_ids_menus = [];
+        var lista_links = [];
+        
+        $(document).ready(function() {
+            
+            // LE ARQUIVO JSON (PARA MONTAR MENUS E BOTOES)
+            var rawFile = new XMLHttpRequest();
+            rawFile.open('GET', 'LINKS.json', true);
+            rawFile.onreadystatechange = function() {
+                if (rawFile.readyState === 4) {
+                    var textoArq = rawFile.responseText;
+                    //document.getElementById("textSection").innerHTML = textoArq + "<hr>";
+                    console.log('textoArq');        
+                    
+                    $.getJSON( 'LINKS.json', function( dados ) {
+                        console.log('getJSON');
+                        //document.getElementById('textSection').innerHTML += dados + "<hr>";
+                        $.each( dados, function( chave_raiz, dados_json ) {
+                            var cont_menus = 0;
+                            cria_menu("todos","TODOS");
+                            lista_ids_menus.push("todos"); // adiciona ao array
+                            //console.log("each dados - chave_raiz = " + chave_raiz + " (chave necessaria receber a estrutura)");
+                            
+                            $.each( dados_json, function( chave_menu, json_menu ) {
+                                cont_menus++;
+                                var id_menu = "menu" + cont_menus;
+                                var cor     = 0;
+                                lista_ids_menus.push(id_menu); // adiciona ao array
+                                //console.log('each menu ' + id_menu + ' - chave: '+chave_menu+' menu: '+json_menu["menu"]);
+                                
+                                // CRIA CADA MENU, a DIV (para botoes) e LI+A (entrada de menu)
+                                cria_menu(id_menu,json_menu["menu"]);
+                                
+                                $.each( json_menu["links"], function( chave_link, json_link ) {
+                                    cor++;
+                                    if (cor === 7) { cor = 1; }
+                                    //console.log('each menu links - chave: ' + chave_link + ' cor: ' + cor + ' nome: ' + json_link["nome"] + ' url(link): ' + json_link["link"] );
+                                    
+                                    // CRIA CADA BOTAO
+                                    cria_botao(id_menu, 'cor'+cor, json_link["nome"], json_link["link"] );
+                                    //cria_botao("todos", 'cor'+cor, json_link["nome"], json_link["link"] );
+                                });
+                            });
+                        });
+                        mostra('menu1'); //esconde os demais menus
+                        
+                        console.log('--- menus e botoes montados ---');
+            
+                        //MONTA OS DESTAQUES
+                        destaques();
+                    });
+                }
+            }
+            rawFile.send();
+            
+            cores(); //define as cores no CSS
+        }); 
+        
+        //MONTA RESULTADO BUSCA
+        function busca_links(){
+            //console.log('-- busca_links');
+            $('#todos').html(""); // limpa DIV do menu todos
+            var texto = $('#input_busca').val();
+            texto = texto.toLowerCase();
+            var n = 0;
+            var nome_e_link = "";
+            console.log('- busca_links - texto: ' + texto);
+            
+            $.each(lista_links, function(chave, aLink) {
+                //console.log('-- busca_links - texto: ' + texto + ' - Nome link: ' + aLink['nome']);
+                nome_e_link = aLink['nome'];
+                nome_e_link = nome_e_link.toLowerCase();
+                n = nome_e_link.search(texto);
+                //console.log('-- busca_links - texto: ' + texto + ' - Link: ' + nome_e_link + ' - n:' + n);
+                if (n > -1) {
+                    //console.log('-- busca_links - texto: ' + texto + ' - Link: ' + nome_e_link + ' - n:' + n);
+                    //console.log('link montado: '+aLink['nome']);
+                    
+                    // CRIA BOTAO
+                    cria_botao_na_busca("todos", "cor1", aLink['nome'], aLink['link']);
+                }
+            });            
+        }
+        
+        //MONTA OS DESTAQUES
+        function destaques(){
+            $('#destaques').html(""); // limpa DIV destaques
+            
+            $.each(lista_links, function(chave, aLink) {
+                console.log('-- lista_links - Nome link: ' + aLink['nome']);
+                var contador_cookie = getCookie(aLink['nome']);
+                if (contador_cookie != "") {
+                    // pegou contador de clicks do link
+                    console.log('link: '+aLink['nome']+' contador: '+contador_cookie);
+                    
+                    // CRIA BOTAO
+                    cria_botao_destaque(aLink['nome'], aLink['link'], contador_cookie);
+                }
+                // guardar noutro array/json
+                // ordenar lista pelos mais acessados ou ultimos acessados
+                // le lista e monta alguns botoes
+            });
+            
+        }
+        
+        // CRIA CADA DIV DE MENU
+        function cria_menu(id_div,nome_menu) {
+            console.log(' cria menu - id: '+id_div+' nome: '+nome_menu);
+            //var tag_div = '<a id="' + id_div + '">' + input_busca + '</div>';
+            var tag_div = '<a id="' + id_div + '">' + $(input_busca).html() + '</a>';
+            $('#botoes_menus').append(tag_div);
+            
+            var id_botaoprincipal_menu = id_div + 'botao';
+            var tag_btn_menu = '<li class="dropdown"><a href="#" class="dropbtn" id="' + id_botaoprincipal_menu + '" onmouseover="mostra(' + "'" + id_div + "'" + ')">'+nome_menu+'</a>';
+            $('#menus').append(tag_btn_menu);
+        }
+        
+        // CRIA CADA BOTAO
+        function cria_botao(id_menu, cor, nome, link) {
+            lista_links.push( { "nome": nome, "link": link } ); // adiciona ao array
+            var tag_a = '<a id="botao_link" class="' + cor + '" href="' + link + '" title="' + nome + '" onclick="registra_click('+"'"+nome+"','"+link+"'"+')"   target="_blank">' + nome + '</a>';
+            $('#'+id_menu).append(tag_a);
+        }
+        
+        // CRIA CADA NA BUSCA
+        function cria_botao_na_busca(id_menu, cor, nome, link) {
+            var tag_a = '<a id="botao_link" class="' + cor + '" href="' + link + '" title="' + nome + '" onclick="registra_click('+"'"+nome+"','"+link+"'"+')"   target="_blank">' + nome + '</a>';
+            $('#'+id_menu).append(tag_a);
+        }
+        
+        // CRIA CADA BOTAO DESTAQUES
+        function cria_botao_destaque(nome, link, contador) {
+            //var tag_a = '<a id="botao_link" class="cor_destaques" href="' + link + '" title="' + nome + '(' + contador + ')" onclick="registra_click('+"'"+nome+"','"+link+"'"+')"   target="_blank">' + nome + '</a>';
+            var tag_a = '<a style="color: white;" href="'+link+'"> '+nome+'('+contador+')</a>&nbsp;&nbsp;';
+            $('#destaques').append(tag_a);
+        }
+          
+        // MOSTRA APENAS OS BOTOES DO MENU ATIVO
+        function mostra(menu_ativo){
+            //console.log("mostra menu ativo - "+menu_ativo);
+            var id_botaoprincipal_menu = '';
+            lista_ids_menus.forEach(function(item){
+                //console.log(' mostra menu ativo - verificado '+item);
+                id_botaoprincipal_menu = item + 'botao';
+                if (item == menu_ativo) {
+                    $('#'+item).show(); // mostra os botoes do menu ativo
+                    $('#'+id_botaoprincipal_menu).addClass('btn_ativo'); // atribui class="btn_ativo" na opcao do menu
+                    if (item == "todos") {
+                        $('#busca').show();
+                    } else {
+                        $('#busca').hide();
+                    }
+                } else {
+                    $('#'+item).hide(); // remove os botoes do menu ativo
+                    $('#'+id_botaoprincipal_menu).removeClass('btn_ativo'); // remove class="btn_ativo"
+                }
+            });
+        }
+        
+        // AO CLICAK NO BOTAO: REGISTRA NUM COOCKIE E VAI PARA O LINK
+        function registra_click(nome,link){
+            console.log('CLICK: '+nome+' - '+link);
+            var contador_cookie = getCookie(nome);
+            if (contador_cookie != "") {
+                // pegar contador (futuramente tambem data/hora ultimo acesso)
+                console.log('contador: '+contador_cookie);
+                // setar com novo valor
+                contador_cookie++;
+                setCookie(nome,contador_cookie,365);
+            } else {
+                // criar o cookie novo
+                console.log('cookie criado');
+                setCookie(nome,'1',365);
+            }
+            
+            destaques(); // ATUALIZA DESTAQUES
+        }
+        
+        function cores(){
+            // DEFINIDO AS CORES (em Hexa no CSS)
+            console.log("cores");
+            
+            //padrao cores
+            var padrao_cores = "P-S"; //verde "-PS"
+            //cor principal do RGB
+            var corA = 80;
+            //cor secundaria do RGB
+            var corB = 15;
+            //cores geradas
+            var cor_css = [];
+            for (var i=0; i<=3; i++){
+                //if (padrao_cores === "-PS") { cor_css[i] = "#"+"00"+corA+corB; }
+                switch (padrao_cores) {
+                    case "-PS":
+                        cor_css[i] = "#"+"00"+corA+corB;
+                        break;
+                    case "P-S":
+                        cor_css[i] = "#"+corA+"00"+corB;
+                        break;
+                }
+                console.log("cor_css["+i+"] = "+cor_css[i]);
+                corA=corA-10;
+                corB=corB+5;    
+            }
+            console.log("setando as cores no css");
+            //document.getElementsByClassName("cor1").style.backgroundColor = cor_css[0];
+            $('.cor1').css("background-color", cor_css[0]);
+            $('.cor2').css("background-color", cor_css[1]);
+            $('.cor3').css("background-color", cor_css[2]);
+            $('.cor4').css("background-color", cor_css[3]);
+            $('.cor5').css("background-color", cor_css[2]);
+            $('.cor6').css("background-color", cor_css[1]);
+            //console.log( $('.cor6').css() );
+            /*
+            .cor1{ background-color: #008015; }
+            .cor2{ background-color: #007020; }
+            .cor3{ background-color: #006025; }
+            .cor4{ background-color: #005030; }
+            .cor5{ background-color: #006025; }
+            .cor6{ background-color: #007020; }
+            */
+        }
+        
+        /*
+        function mostra(){
+            console.log("mostra");
+            $('#mostra_oculta').html('<button onclick="oculta()">Ocultar links</button>')
+            $('#linha_teste').show();
+        }
+        
+        function oculta(){
+            console.log("oculta");
+            $('#mostra_oculta').html('<button onclick="mostra()">Mostrar links</button>')
+            $('#linha_teste').hide();
+        }
+        
+        <!--
+        <div id="mostra_oculta">
+            <button onclick="mostra()">Mostrar links</button>
+        </div>
+        <div id="textSection"> 
+        </div> 
+        -->
+        */
+        
+    </script>
+
+    
+</head>
+<body style="background-color: black;">
+    
+<ul>
+  <div id="menus">
+    <!-- AQUI O JAVASCRIPT/JQUERY VAI INSERIR AS TAGs COM SEUS RESPECTIVOS NOMES DE MENUS -->
+  </div>
+</ul>
+
+<div id="meio">
+    <div id="destaques"> 
+        <!-- AQUI O JAVASCRIPT/JQUERY VAI INSERIR ALGUNS BOTOES -->
+    </div>
+    <div id="busca"> 
+        <input id='input_busca' onkeypress="busca_links()" type='text'/>
+        <button onclick="busca_links()">Busca</button>
+    </div>
+    <div id="botoes_menus"> 
+        <!-- AQUI O JAVASCRIPT/JQUERY VAI INSERIR AS DIVs COM SEUS RESPECTIVOS BOTOES -->
+    </div>
+</div>
+
+</body>
+</html>

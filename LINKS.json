@@ -1,0 +1,79 @@
+{
+   "menus": [
+      {
+         "menu": "Primeiro Menu",
+         "links": [
+            {
+               "nome": "Gmail",
+               "link": "https://gmail.com"
+            },
+            {
+               "nome": "Whatsapp",
+               "link": "https://web.whatsapp.com/"
+            },
+            {
+               "nome": "Telegram",
+               "link": "https://web.telegram.org/"
+            },
+            {
+               "nome": "Keep",
+               "link": "http://keep.google.com/"
+            },
+            {
+               "nome": "Drive",
+               "link": "http://drive.google.com/"
+            },
+            {
+               "nome": "Youtube",
+               "link": "https://www.youtube.com/"
+            },
+            {
+               "nome": "Netflix",
+               "link": "https://netflix.com/"
+            },
+            {
+               "nome": "Trello",
+               "link": "http://trello.com/"
+            }
+         ]
+      },
+      {
+         "menu": "Segundo Menu",
+         "links": [
+            {
+               "nome": "Facebook",
+               "link": "https://www.facebook.com/"
+            },
+            {
+               "nome": "Github",
+               "link": "https://github.com"
+            },
+            {
+               "nome": "Bitbucket.org",
+               "link": "https://bitbucket.org/"
+            },
+            {
+               "nome": ".NET Conf UY",
+               "link": "http://netconf.uy/"
+            },
+            {
+               "nome": "Font Awesome",
+               "link": "https://www.w3schools.com/icons/fontawesome_icons_webapp.asp"
+            },
+            {
+               "nome": "Glyphicons",
+               "link": "https://www.glyphicons.com/"
+            },         
+            {
+               "nome": "TcheLinux.org",
+               "link": "http://tchelinux.org/"
+            },
+            {
+               "nome": "Google Livros",
+               "link": "https://books.google.com.br/"
+            }
+         ]
+      }
+   ]
+}
+
